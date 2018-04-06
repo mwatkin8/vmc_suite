@@ -25,22 +25,38 @@ def digest(blob, n=24):
 def vcf_to_vmc(seqs, chrs, intervals, states):
     results = []
     for i in range(len(chrs)):
-        chr = int(chrs[i]) - 1
+        if chrs[i].isalpha():
+            if chrs[i] == "X":
+                seqs_position = 22
+            else:
+                seqs_position = 23
+            chr = chrs[i]
+        else:
+            chr = int(chrs[i]) - 1
+            seqs_position = chr
         #Generate the location identifier
-        GL = "VMC:GL_" + digest(GL_template(seqs[chr],intervals[i]).encode("ASCII"))
+        GL = "VMC:GL_" + digest(GL_template(seqs[i],intervals[i]).encode("ASCII"))
         #Generate the allele identifier
         GA = "VMC:GA_" + digest(GA_template(GL,states[i]).encode("ASCII"))
         #Compile them into an appropriate string
-        results.append(";VMCGSID=" + seqs[chr] + ";VMCGLID=" + GL + ";VMCGAID=" + GA)
+        results.append(";VMCGSID=" + seqs[i] + ";VMCGLID=" + GL + ";VMCGAID=" + GA)
     return results
 
 def json_to_vmc(seqs, accs, chrs, intervals, states):
     results = []
     for i in range(len(chrs)):
-        chr = int(chrs[i]) - 1
+        if chrs[i].isalpha():
+            if chrs[i] == "X":
+                seqs_position = 22
+            else:
+                seqs_position = 23
+            chr = chrs[i]
+        else:
+            chr = int(chrs[i]) - 1
+            seqs_position = chr
         #Generate the location identifier
-        GL = "VMC:GL_" + digest(GL_template(seqs[chr],intervals[i]).encode("ASCII"))
+        GL = "VMC:GL_" + digest(GL_template(seqs[seqs_position],intervals[i]).encode("ASCII"))
         #Generate the allele identifier
         GA = "VMC:GA_" + digest(GA_template(GL,states[i]).encode("ASCII"))
-        results.append(GL + '\t' + intervals[i] + '\t' + seqs[chr] + '\t' + GA + '\t' + states[i] + '\t' + accs[chr] + "\tNCBI")
+        results.append(GL + '\t' + intervals[i] + '\t' + seqs[seqs_position] + '\t' + GA + '\t' + states[i] + '\t' + accs[seqs_position] + "\tNCBI")
     return results
